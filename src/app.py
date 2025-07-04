@@ -1,6 +1,6 @@
-"""Preptura – Tabular Data Pre‑processor
+"""Preptura - Tabular Data Pre-processor
 Core GUI application (Tkinter)
-Only change in this revision: add a menubar with a gear‑icon Settings entry.
+Only change in this revision: add a menubar with a gear-icon Settings entry.
 Future steps will wire the Settings window; for now it shows a placeholder dialog.
 """
 
@@ -19,6 +19,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 from utils.config import load_config, save_config
 from utils.file_manager import list_supported_files
+from utils.esri_features import df_to_featureset
 
 
 class PrepturaApp:
@@ -59,7 +60,7 @@ class PrepturaApp:
     # UI construction (existing, unchanged except for folder button callback)
     # ---------------------------------------------------------------------
     def _build_ui(self) -> None:
-        """Assemble the two‑pane file‑manager UI (simplified)."""
+        """Assemble the two-pane file-manager UI (simplified)."""
 
         # Paned window gives a resizable splitter between tree & file list
         paned = ttk.PanedWindow(self.root, orient="horizontal")
@@ -87,17 +88,17 @@ class PrepturaApp:
         ttk.Button(button_row, text="Save Cleaned File", command=self.save_cleaned_file, state="disabled").pack(side="left", padx=4)
 
     # ------------------------------------------------------------------
-    # Directory‑tree helpers
+    # Directory-tree helpers
     # ------------------------------------------------------------------
     def _populate_drives(self) -> None:
-        """Populate top‑level drive / root nodes (cross‑platform)."""
+        """Populate top-level drive / root nodes (cross-platform)."""
         if os.name == "nt":  # Windows
             for drive_letter in string.ascii_uppercase:
                 drive = f"{drive_letter}:\\"
                 if os.path.exists(drive):
                     node = self.dir_tree.insert("", "end", text=drive, values=[drive])
                     self.dir_tree.insert(node, "end")  # dummy child
-        else:  # *nix – start from root
+        else:  # *nix - start from root
             node = self.dir_tree.insert("", "end", text="/", values=["/"])
             self.dir_tree.insert(node, "end")
 
@@ -109,7 +110,7 @@ class PrepturaApp:
         for child in sorted(path.iterdir()):
             if child.is_dir():
                 child_node = self.dir_tree.insert(node, "end", text=child.name, values=[str(child)])
-                # Add dummy child if directory has sub‑dirs
+                # Add dummy child if directory has sub-dirs
                 if any(p.is_dir() for p in path.iterdir()):
                     self.dir_tree.insert(child_node, "end")
 
@@ -127,7 +128,7 @@ class PrepturaApp:
         return os.path.join(*components)
 
     # ------------------------------------------------------------------
-    # File‑list refresh
+    # File-list refresh
     # ------------------------------------------------------------------
     def _refresh_file_list(self) -> None:
         self.file_listbox.delete(0, tk.END)
@@ -157,6 +158,17 @@ class PrepturaApp:
     def save_cleaned_file(self):
         pass  # to be implemented
 
+    def log(self, message):
+        self.log_output.insert(tk.END, str(message) + "\n")
+        self.log_output.see(tk.END)
+        
+    def export_featureset(self):
+        if self.df is None:
+            messagebox.showerror("Error", "No data loaded.")
+            return
+        fs = df_to_featureset(self.df)
+        feature_count = len(fs.features) if fs.features is not None else 0
+        self.log(f"FeatureSet created with {feature_count} features.")
 
 # ---------------------------------------------------------------------------
 # Launch application --------------------------------------------------------
