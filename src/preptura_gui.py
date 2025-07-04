@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import pandas as pd
 import os
+from utils.esri_features import df_to_featureset
 
 class PrepturaApp:
     def __init__(self, root):
@@ -21,6 +22,8 @@ class PrepturaApp:
         self.diagnose_btn.grid(row=0, column=1, padx=5, pady=5)
         self.save_btn = ttk.Button(frame, text="Save Cleaned File", command=self.save_file, state='disabled')
         self.save_btn.grid(row=0, column=2, padx=5, pady=5)
+        self.export_btn = ttk.Button(frame, text="Export as FeatureSet", command=self.export_featureset, state='normal')
+        self.export_btn.grid(row=0, column=3, padx=5, pady=5)
 
         self.log_output = tk.Text(frame, height=20, width=100, wrap="word")
         self.log_output.grid(row=1, column=0, columnspan=3, pady=10)
@@ -76,6 +79,14 @@ class PrepturaApp:
         self.log_output.insert(tk.END, str(message) + "\n")
         self.log_output.see(tk.END)
 
+    def export_featureset(self):
+        if self.df is None:
+            messagebox.showerror("Error", "No data loaded.")
+            return
+        fs = df_to_featureset(self.df)
+        feature_count = len(fs.features) if fs.features is not None else 0
+        self.log(f"FeatureSet created with {feature_count} features.")
+        
 if __name__ == "__main__":
     root = tk.Tk()
     app = PrepturaApp(root)
