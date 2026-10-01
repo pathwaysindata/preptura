@@ -1,0 +1,37 @@
+{
+  "active_profile": "prod",
+  "profiles": [
+    {
+      "name": "prod",
+      "url": "https://portal.example.gov/portal",
+      "auth_mode": "built_in",
+      "username": "jane.doe",
+      "password_env": "PORTAL_PROD_PASS",
+      "verify_ssl": true,
+      "proxies": null,
+      "referer": null,
+      "token_lifetime": 120,
+      "set_active_on_connect": true
+    },
+    {
+      "name": "stage-oauth",
+      "url": "https://stage.example.gov/portal",
+      "auth_mode": "oauth",
+      "client_id": "YOUR_APP_CLIENT_ID",
+      "client_secret_env": "PORTAL_STAGE_CLIENT_SECRET",
+      "redirect_uri": "https://localhost:8080/callback",
+      "verify_ssl": "/etc/ssl/certs/ca-bundle.crt",
+      "proxies": {
+        "http": "http://proxy.example.gov:8080",
+        "https": "http://proxy.example.gov:8080"
+      },
+      "token_lifetime": 120
+    },
+    {
+      "name": "public",
+      "url": "https://sampleserver6.arcgisonline.com/arcgis",
+      "auth_mode": "anonymous",
+      "verify_ssl": true
+    }
+  ]
+}
