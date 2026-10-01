@@ -174,3 +174,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .vscode/launch.json
+data/yellow_tripdata_2025-01.parquet
